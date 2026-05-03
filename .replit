@@ -1,4 +1,4 @@
-run = ["python", "manage.py", "runserver", "0.0.0.0:3000"]
+run = ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 entrypoint = "manage.py"
 modules = ["python-3.11"]
 
@@ -12,15 +12,15 @@ packages = ["cairo", "ffmpeg-full", "freetype", "ghostscript", "glibcLocales", "
 language = "python3"
 
 [deployment]
-run = ["python", "manage.py", "runserver", "0.0.0.0:3000"]
+run = ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 deploymentTarget = "gce"
 
 [[ports]]
-localPort = 3000
+localPort = 8000
 externalPort = 80
 
 [[ports]]
-localPort = 5000
+localPort = 8000
 externalPort = 80
 
 [agent]
@@ -48,5 +48,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=5000 ./deploy.sh"
-waitForPort = 5000
+args = "PORT=8000 ./deploy.sh"
+waitForPort = 8000

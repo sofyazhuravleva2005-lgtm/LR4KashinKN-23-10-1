@@ -3,54 +3,292 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ПДП-Контейнер</title>
+    <title>ПДП-Контейнер – защита от подмены</title>
+    <!-- Bootstrap 5 + иконки -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .chart-img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .chart-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        .app-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .main-title {
+            font-weight: 700;
+            font-size: 2rem;
+            color: #1e3c72;
+            border-left: 6px solid #2b5eb0;
+            padding-left: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+        .keys-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .keys-panel h5 {
+            font-weight: 600;
+            color: #2b5eb0;
+            margin-bottom: 1rem;
+        }
+        .key-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        .key-icon {
+            width: 32px;
+            height: 32px;
+            background: #eef3ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2b5eb0;
+            margin-right: 1rem;
+            font-size: 1rem;
+        }
+        .key-text {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: #f1f4f9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            color: #1e3c72;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            margin-right: 1rem;
+        }
+        .badge-blocked {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .badge-allowed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-section h2 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;           /* показываем, что можно кликать */
+        }
+        .chart-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+        .chart-card h3 {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2b5eb0;
+            margin-bottom: 0.75rem;
+        }
+        .chart-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+        hr {
+            margin: 2rem 0;
+            border-top: 2px solid rgba(0,0,0,0.05);
+        }
+        .footer-note {
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* Модальное окно для просмотра графиков */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-modal.active {
+            display: flex;
+        }
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 44px;
+            height: 44px;
+            background: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .lightbox-close:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
     {% load static %}
-    <div class="container my-4">
-        <h1>ПДП-Контейнер – защита от подмены пользователя</h1>
-        <div class="alert alert-info">
-            <strong>Секретные ключи:</strong><br>
-            IMP_S1_KASHIN = {{ secrets.s1 }}<br>
-            IMP_S2_KASHIN = {{ secrets.s2 }}<br>
-            IMP_S3_KASHIN = {{ secrets.s3 }}
-        </div>
+    <div class="app-container">
+        <!-- Заголовок -->
+        <h1 class="main-title">
+            <i class="bi bi-shield-shaded me-2"></i>ПДП‑Контейнер – защита от подмены пользователя
+        </h1>
 
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white">Результаты анализа ({{ total_requests }} запросов)</div>
-            <div class="card-body">
-                <p><strong>Заблокировано:</strong> {{ blocked }} | <strong>Разрешено:</strong> {{ allowed }}</p>
+        <!-- Блок с ключами -->
+        <div class="keys-panel">
+            <h5><i class="bi bi-key-fill me-2"></i>Секретные ключи</h5>
+            <div class="key-item">
+                <span class="key-icon"><i class="bi bi-lock"></i></span>
+                <span class="key-text">IMP_S1_KASHIN = {{ secrets.s1 }}</span>
+            </div>
+            <div class="key-item">
+                <span class="key-icon"><i class="bi bi-lock"></i></span>
+                <span class="key-text">IMP_S2_KASHIN = {{ secrets.s2 }}</span>
+            </div>
+            <div class="key-item">
+                <span class="key-icon"><i class="bi bi-lock"></i></span>
+                <span class="key-text">IMP_S3_KASHIN = {{ secrets.s3 }}</span>
             </div>
         </div>
 
-        <div class="card mb-3">
-            <div class="card-header bg-secondary text-white">Таблица рисков</div>
-            <div class="card-body">
+        <!-- Результаты анализа -->
+        <div class="stat-card">
+            <h5 style="font-weight: 600; color: #2b5eb0; margin-bottom: 1rem;">
+                <i class="bi bi-graph-up me-2"></i>Результаты анализа ({{ total_requests }} запросов)
+            </h5>
+            <div>
+                <span class="stat-badge badge-blocked">
+                    <i class="bi bi-x-octagon-fill me-1"></i>Заблокировано: {{ blocked }}
+                </span>
+                <span class="stat-badge badge-allowed">
+                    <i class="bi bi-check-circle-fill me-1"></i>Разрешено: {{ allowed }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Таблица рисков -->
+        <div class="table-card">
+            <h5 style="font-weight: 600; color: #2b5eb0; margin-bottom: 1rem;">
+                <i class="bi bi-table me-2"></i>Таблица рисков
+            </h5>
+            <div style="overflow-x: auto;">
                 {{ table_html|safe }}
             </div>
         </div>
 
-        <h2>Графики</h2>
-        <div class="row">
-            <div class="col-md-6"><div class="chart-card">
-                <h3>Риск подмены (столбцы)</h3>
-                <img src="{% static chart_paths.bar %}" class="chart-img">
-            </div></div>
-            <div class="col-md-6"><div class="chart-card">
-                <h3>Тренд риска</h3>
-                <img src="{% static chart_paths.line %}" class="chart-img">
-            </div></div>
-            <div class="col-md-6"><div class="chart-card">
-                <h3>Распределение решений</h3>
-                <img src="{% static chart_paths.pie %}" class="chart-img">
-            </div></div>
+        <!-- Графики -->
+        <div class="chart-section">
+            <h2><i class="bi bi-bar-chart-line me-2"></i>Визуализация</h2>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="chart-card text-center" onclick="openLightbox('{% static chart_paths.bar %}')">
+                        <h3>Риск подмены (столбцы)</h3>
+                        <img src="{% static chart_paths.bar %}" alt="Столбчатая диаграмма риска" class="chart-img">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="chart-card text-center" onclick="openLightbox('{% static chart_paths.line %}')">
+                        <h3>Тренд риска</h3>
+                        <img src="{% static chart_paths.line %}" alt="Линейный график тренда" class="chart-img">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="chart-card text-center" onclick="openLightbox('{% static chart_paths.pie %}')">
+                        <h3>Распределение решений</h3>
+                        <img src="{% static chart_paths.pie %}" alt="Круговая диаграмма решений" class="chart-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div class="footer-note">
+            <i class="bi bi-info-circle me-1"></i>
+            Для изменения порога добавьте переменную <code>THRESHOLD</code> в Secrets Replit.
         </div>
     </div>
+
+    <!-- Модальное окно для просмотра графиков -->
+    <div id="lightbox" class="lightbox-modal" onclick="closeLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+            <img id="lightbox-img" src="" alt="Просмотр графика">
+        </div>
+    </div>
+
+    <script>
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox(e) {
+            // если передан объект события и клик был по фону (не по кнопке) – закрываем
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        // Закрытие по клавише Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    </script>
 </body>
 </html>
