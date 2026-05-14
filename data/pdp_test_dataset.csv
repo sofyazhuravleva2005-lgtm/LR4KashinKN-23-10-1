@@ -1,0 +1,11 @@
+request_id,token_mismatch,ip_mismatch,device_mismatch,replay_detected,expected_decision
+1,10,5,5,0,Allowed
+2,20,10,10,5,Allowed
+3,35,30,25,45,Blocked
+4,0,0,0,0,Allowed
+5,30,25,20,35,Blocked
+6,15,15,10,10,Allowed
+7,35,5,25,40,Blocked
+8,5,25,5,0,Allowed
+9,25,30,25,30,Blocked
+10,0,30,25,45,Blocked
