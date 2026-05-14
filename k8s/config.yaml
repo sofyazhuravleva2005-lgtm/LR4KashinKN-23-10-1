@@ -23,13 +23,14 @@ spec:
         - containerPort: 80
 
     - name: pdp-web
-      image: pdp-container:latest
-      imagePullPolicy: Never
+      image: 13mateo/pdp-container:latest
+      imagePullPolicy: Always
       ports:
         - containerPort: 8000
       envFrom:
         - configMapRef:
             name: pdp-config
+    
 
     - name: postgres
       image: postgres:15
